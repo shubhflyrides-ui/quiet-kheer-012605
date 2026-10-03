@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flyrides UI Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        flyrides: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .card-shadow {
+            box-shadow: 0 4px 18px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+        }
+        .dark .card-shadow {
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45);
+        }
+        .glass-header {
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+    </style>
+</head>
+<body class="bg-[#f3f4f6] text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col antialiased selection:bg-sky-500 selection:text-white">
+
+    <header class="sticky top-0 z-30 glass-header bg-white/85 dark:bg-slate-900/85 border-b border-slate-200/90 dark:border-slate-800 px-4 lg:px-8 py-3.5 transition-colors">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            
+            <!-- Logo & Branding -->
+            <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center text-white shadow-md shadow-sky-500/25 font-extrabold text-xl tracking-wider">
+                        <i class="fa-solid fa-plane-departure text-base"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                            Flyrides UI Hub
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300">v2.1</span>
+                        </h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Enterprise Software & UI Portal</p>
+                    </div>
+                </div>
+
+                <!-- Mobile Action Controls -->
+                <div class="flex items-center gap-2 md:hidden">
+                    <button id="themeToggleMobileBtn" class="p-2.5 rounded-xl text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition">
+                        <i class="fa-solid fa-moon text-lg dark:hidden"></i>
+                        <i class="fa-solid fa-sun text-lg hidden dark:block text-amber-400"></i>
+                    </button>
+                    <button id="addAppMobileBtn" class="p-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl shadow-sm text-sm font-semibold">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="relative w-full md:w-96">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                </div>
+                <input type="text" id="searchInput" placeholder="Search apps & tools... (/ to focus)" 
+                    class="w-full pl-10 pr-10 py-2 bg-slate-100/90 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/60 rounded-xl text-sm focus:outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-slate-800 dark:text-slate-100 transition-all placeholder-slate-400">
+                <div id="clearSearch" class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hidden">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </div>
+            </div>
+
+            <!-- Desktop Controls -->
+            <div class="hidden md:flex items-center space-x-3">
+                <button id="themeToggleBtn" title="Toggle Light/Dark Theme" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700/80 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-moon text-base dark:hidden"></i>
+                    <i class="fa-solid fa-sun text-base hidden dark:block text-amber-400"></i>
+                </button>
+
+                <button id="openAddModalBtn" class="flex items-center gap-2 bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md shadow-sky-600/20 transition hover:shadow-lg hover:shadow-sky-600/30">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>Add New App</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-8 py-8">
+        
+        <!-- Category & Counter Header Bar -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div class="flex items-center space-x-3">
+                <div class="p-2.5 bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 rounded-xl border border-sky-100 dark:border-sky-900/50">
+                    <i class="fa-solid fa-cubes-stacked text-lg"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight">WEB APPS</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Enterprise tools and Google Web Apps launcher</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <span class="text-xs font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 px-3 py-1.5 rounded-xl shadow-xs">
+                    Total Apps: <strong id="appCount" class="text-sky-600 dark:text-sky-400 ml-1">0</strong>
+                </span>
+                <button id="resetAppsBtn" class="text-xs text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition underline underline-offset-2 font-medium">
+                    Reset Defaults
+                </button>
+            </div>
+        </div>
+
+        <!-- Cards Grid Container -->
+        <div id="cardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            <!-- Dynamically populated app cards -->
+        </div>
+
+        <!-- Empty Search Result State -->
+        <div id="noResultsState" class="hidden flex-col items-center justify-center py-16 text-center">
+            <div class="w-16 h-16 bg-white dark:bg-slate-800 text-slate-400 rounded-2xl flex items-center justify-center mb-4 text-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <h3 class="text-base font-semibold text-slate-700 dark:text-slate-200">No applications found</h3>
+            <p class="text-xs text-slate-400 mt-1 max-w-sm">We couldn't find anything matching your search term. Try checking for typos or add a new app.</p>
+        </div>
+    </main>
+
+    <footer class="border-t border-slate-200 dark:border-slate-800 py-6 mt-12 bg-white/60 dark:bg-slate-900/60">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 dark:text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div>
+                &copy; <span id="yearSpan"></span> Flyrides Digital • Enterprise Modules & Tools
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="inline-flex items-center gap-1.5 font-medium text-emerald-600 dark:text-emerald-400">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    All Systems Operational
+                </span>
+            </div>
+        </div>
+    </footer>
+
+    <div id="appModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden transform scale-95 transition-transform duration-200 max-h-[90vh] flex flex-col" id="modalContainer">
+            
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-800/40 shrink-0">
+                <h3 id="modalTitle" class="text-base font-bold text-slate-800 dark:text-slate-100">Add New Module</h3>
+                <button id="closeModalBtn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Modal Form Body -->
+            <form id="appForm" class="p-6 space-y-4 overflow-y-auto">
+                <input type="hidden" id="appId">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Module Name *</label>
+                    <input type="text" id="appName" required placeholder="e.g. Battery Management"
+                        class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Software Link / URL *</label>
+                    <input type="url" id="appUrl" required placeholder="https://script.google.com/macros/s/..."
+                        class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">Status Tag</label>
+                        <select id="appStatusType" class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            <option value="In-Office" selected>In-Office</option>
+                            <option value="Online">Online</option>
+                            <option value="Open">Open</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">IP / Subtext</label>
+                        <input type="text" id="appSubtext" placeholder="e.g. 192.168.1.27:9011"
+                            class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    </div>
+                </div>
+
+                <!-- Custom Image Logo Options Section -->
+                <div class="border-t border-slate-100 dark:border-slate-800 pt-3 mt-3">
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                        Custom App Logo / Image
+                    </label>
+
+                    <!-- Image Preview Area -->
+                    <div id="imagePreviewContainer" class="hidden mb-3 p-2 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <img id="imagePreview" src="" alt="App Logo Preview" class="w-10 h-10 rounded-lg object-cover border border-slate-200 dark:border-slate-600 bg-white">
+                            <span class="text-xs font-medium text-slate-600 dark:text-slate-300">Custom Image Active</span>
+                        </div>
+                        <button type="button" id="removeImageBtn" class="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 font-semibold px-2 py-1">
+                            <i class="fa-solid fa-trash-can mr-1"></i> Remove
+                        </button>
+                    </div>
+
+                    <div class="space-y-2">
+                        <!-- Image URL Input -->
+                        <div>
+                            <input type="url" id="appImageUrl" placeholder="Paste Image URL (https://...)"
+                                class="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500">
+                        </div>
+                        <!-- File Upload Input -->
+                        <div class="flex items-center gap-2">
+                            <span class="text-[11px] text-slate-400 uppercase font-semibold">Or</span>
+                            <label class="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-100 dark:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-slate-200/60 dark:hover:bg-slate-700/60 transition">
+                                <i class="fa-solid fa-cloud-arrow-up text-sky-600 dark:text-sky-400 text-xs"></i>
+                                <span class="text-xs text-slate-600 dark:text-slate-300 font-medium">Upload Image File</span>
+                                <input type="file" id="appImageFile" accept="image/*" class="hidden">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fallback Preset Icon Picker -->
+                <div id="presetIconsSection" class="border-t border-slate-100 dark:border-slate-800 pt-3">
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1.5">Preset Icon (If no image)</label>
+                    <div class="grid grid-cols-5 gap-2" id="iconSelector">
+                        <!-- Custom icon selector buttons -->
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="pt-3 flex items-center justify-end space-x-3 border-t border-slate-100 dark:border-slate-800 mt-5 shrink-0">
+                    <button type="button" id="cancelModalBtn" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-xl shadow-md shadow-sky-600/20 transition">
+                        Save App
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Exact Apps Dataset provided by user with 'In-Office' status
+        const DEFAULT_APPS = [
+            {
+                id: '1',
+                name: 'Sunshade Inventory',
+                url: 'https://script.google.com/macros/s/AKfycbwSIfqWLmwF5hnQDMwwvBAtOUgr6xOVrLePeiszOKvXkPFtqYFi_iFWU0itt2hInaFp/exec',
+                statusType: 'In-Office',
+                subtext: '192.168.1.43:5001',
+                icon: 'fa-boxes-stacked',
+                iconBg: 'bg-rose-500',
+                imageUrl: ''
+            },
+            {
+                id: '2',
+                name: 'Battery Management',
+                url: 'https://script.google.com/macros/s/AKfycbyHh8CVDZRiwviTSEAiZ6rAmRv_b9DVcYwqkumJewYSXFx89Jh8CHsMw4J-VdiLDM_2/exec',
+                statusType: 'In-Office',
+                subtext: '192.168.1.27:9005',
+                icon: 'fa-battery-three-quarters',
+                iconBg: 'bg-amber-500',
+                imageUrl: ''
+            },
+            {
+                id: '3',
+                name: 'PI GENERATOR',
+                url: 'https://script.google.com/macros/s/AKfycbz2rcgmJrNYQa0AwmLowPfIxKrImnrwJ5HK3FPAHUxtCTJZqp7QdAcITgFcvXkgRUB70A/exec',
+                statusType: 'In-Office',
+                subtext: '192.168.1.43:8001',
+                icon: 'fa-file-invoice-dollar',
+                iconBg: 'bg-sky-500',
+                imageUrl: ''
+            },
+            {
+                id: '4',
+                name: 'Delivery Challan Generator',
+                url: 'https://script.google.com/macros/s/AKfycbxl6-o99y2Nz3FlUoB4LRzfejBQxk38gysgM3aMSqi0vKtlwIjYjqtqP8XXBiJiYZQg/exec',
+                statusType: 'In-Office',
+                subtext: '192.168.1.27:8051',
+                icon: 'fa-truck-ramp-box',
+                iconBg: 'bg-indigo-600',
+                imageUrl: ''
+            },
+            {
+                id: '5',
+                name: 'HR Resume App',
+                url: 'https://script.google.com/macros/s/AKfycbw0GDOj9DtlkoIAP9KUOp2WPAIOggzENgfXCWLe6dXtqzon5yxeZI8PkRqccQJ4V4qW/exec',
+                statusType: 'In-Office',
+                subtext: '192.168.1.27:8045',
+                icon: 'fa-id-card-clip',
+                iconBg: 'bg-emerald-500',
+                imageUrl: ''
+            }
+        ];
+
+        const ICONS_LIST = [
+            { icon: 'fa-boxes-stacked', color: 'bg-rose-500' },
+            { icon: 'fa-battery-three-quarters', color: 'bg-amber-500' },
+            { icon: 'fa-file-invoice-dollar', color: 'bg-sky-500' },
+            { icon: 'fa-truck-ramp-box', color: 'bg-indigo-600' },
+            { icon: 'fa-id-card-clip', color: 'bg-emerald-500' },
+            { icon: 'fa-car-side', color: 'bg-blue-600' },
+            { icon: 'fa-screwdriver-wrench', color: 'bg-orange-500' },
+            { icon: 'fa-chart-pie', color: 'bg-purple-600' },
+            { icon: 'fa-shield-halved', color: 'bg-teal-600' },
+            { icon: 'fa-gear', color: 'bg-slate-600' }
+        ];
+
+        // Global State Variables
+        let apps = [];
+        let selectedIcon = ICONS_LIST[0];
+        let currentCustomImage = '';
+
+        // DOM Element Cache
+        const cardsGrid = document.getElementById('cardsGrid');
+        const searchInput = document.getElementById('searchInput');
+        const clearSearch = document.getElementById('clearSearch');
+        const appCount = document.getElementById('appCount');
+        const noResultsState = document.getElementById('noResultsState');
+        const appModal = document.getElementById('appModal');
+        const modalContainer = document.getElementById('modalContainer');
+        const appForm = document.getElementById('appForm');
+        const modalTitle = document.getElementById('modalTitle');
+        const iconSelector = document.getElementById('iconSelector');
+        const appImageUrlInput = document.getElementById('appImageUrl');
+        const appImageFileInput = document.getElementById('appImageFile');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const removeImageBtn = document.getElementById('removeImageBtn');
+
+        function initApp() {
+            // Theme initialization
+            if (localStorage.getItem('flyrides_theme') === 'dark' || (!('flyrides_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+
+            // Load saved data or populate defaults
+            const storedApps = localStorage.getItem('flyrides_apps_v2');
+            if (storedApps) {
+                try {
+                    apps = JSON.parse(storedApps);
+                } catch(e) {
+                    apps = [...DEFAULT_APPS];
+                }
+            } else {
+                apps = [...DEFAULT_APPS];
+                saveAppsToStorage();
+            }
+
+            document.getElementById('yearSpan').textContent = new Date().getFullYear();
+            renderIconSelector();
+            renderCards();
+            setupEventListeners();
+        }
+
+        function saveAppsToStorage() {
+            localStorage.setItem('flyrides_apps_v2', JSON.stringify(apps));
+        }
+
+        function renderCards(filterText = '') {
+            cardsGrid.innerHTML = '';
+            
+            const filteredApps = apps.filter(app => 
+                app.name.toLowerCase().includes(filterText.toLowerCase()) || 
+                (app.subtext && app.subtext.toLowerCase().includes(filterText.toLowerCase()))
+            );
+
+            appCount.textContent = filteredApps.length;
+
+            if (filteredApps.length === 0) {
+                noResultsState.classList.remove('hidden');
+                noResultsState.classList.add('flex');
+            } else {
+                noResultsState.classList.add('hidden');
+                noResultsState.classList.remove('flex');
+            }
+
+            filteredApps.forEach(app => {
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-slate-800/90 rounded-2xl border border-slate-200/90 dark:border-slate-700/60 p-5 flex flex-col justify-between card-shadow hover:border-sky-400 dark:hover:border-sky-500 transition-all duration-200 group relative";
+                
+                // Determine style based on status tag
+                let badgeStyle = "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border-amber-200/80 dark:border-amber-800/50";
+                let tagIcon = "fa-building";
+                
+                if (app.statusType === 'Online') {
+                    badgeStyle = "bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400 border-sky-200/80 dark:border-sky-800/50";
+                    tagIcon = "fa-globe";
+                } else if (app.statusType === 'Open') {
+                    badgeStyle = "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-emerald-200/80 dark:border-emerald-800/50";
+                    tagIcon = "fa-network-wired";
+                }
+
+                // Render custom logo image or default font-awesome badge
+                let logoMarkup = '';
+                if (app.imageUrl && app.imageUrl.trim() !== '') {
+                    logoMarkup = `<img src="${escapeHtml(app.imageUrl)}" alt="${escapeHtml(app.name)}" class="w-11 h-11 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shadow-sm shrink-0 bg-white" onerror="this.onerror=null; this.src='https://placehold.co/100x100/0284c7/ffffff?text=App';">`;
+                } else {
+                    logoMarkup = `
+                        <div class="w-11 h-11 rounded-xl ${app.iconBg || 'bg-sky-500'} text-white flex items-center justify-center text-lg shadow-sm font-semibold shrink-0">
+                            <i class="fa-solid ${app.icon || 'fa-cubes'}"></i>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div>
+                        <!-- Header with App Custom Image/Icon & Title -->
+                        <div class="flex items-start justify-between gap-3 mb-4">
+                            <div class="flex items-center space-x-3.5 min-w-0">
+                                ${logoMarkup}
+                                <div class="overflow-hidden">
+                                    <h3 class="font-bold text-slate-900 dark:text-slate-100 text-base leading-snug truncate group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors" title="${escapeHtml(app.name)}">
+                                        ${escapeHtml(app.name)}
+                                    </h3>
+                                </div>
+                            </div>
+
+                            <!-- Edit/Delete Quick Actions -->
+                            <div class="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 shrink-0">
+                                <button onclick="openEditModal('${app.id}')" title="Edit App" class="p-1.5 text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/50 transition">
+                                    <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                </button>
+                                <button onclick="deleteApp('${app.id}')" title="Delete App" class="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/50 transition">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- AGP-style Status Pill Launch Button -->
+                        <div class="mt-2">
+                            <a href="${escapeHtml(app.url)}" target="_blank" rel="noopener noreferrer" 
+                                class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border ${badgeStyle} hover:opacity-90 transition group/btn">
+                                <div class="flex items-center space-x-2.5 overflow-hidden">
+                                    <i class="fa-solid ${tagIcon} text-xs"></i>
+                                    <div class="flex flex-col text-left overflow-hidden">
+                                        <span class="text-xs font-bold leading-none">${app.statusType || 'In-Office'}</span>
+                                        <span class="text-[11px] opacity-75 font-mono truncate mt-0.5">${escapeHtml(app.subtext || '192.168.1.27')}</span>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-arrow-up-right-from-square text-xs opacity-75 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+                cardsGrid.appendChild(card);
+            });
+        }
+
+        function renderIconSelector() {
+            iconSelector.innerHTML = '';
+            ICONS_LIST.forEach((item) => {
+                const isSelected = selectedIcon.icon === item.icon;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `p-2.5 rounded-xl border flex items-center justify-center text-white ${item.color} ${isSelected ? 'ring-2 ring-sky-500 ring-offset-2 dark:ring-offset-slate-900 border-transparent scale-105' : 'border-slate-200 dark:border-slate-700 opacity-65 hover:opacity-100'} transition-all`;
+                btn.innerHTML = `<i class="fa-solid ${item.icon}"></i>`;
+                btn.onclick = () => {
+                    selectedIcon = item;
+                    renderIconSelector();
+                };
+                iconSelector.appendChild(btn);
+            });
+        }
+
+        function setCustomImagePreview(url) {
+            if (url && url.trim() !== '') {
+                currentCustomImage = url;
+                imagePreview.src = url;
+                imagePreviewContainer.classList.remove('hidden');
+                imagePreviewContainer.classList.add('flex');
+            } else {
+                currentCustomImage = '';
+                imagePreview.src = '';
+                imagePreviewContainer.classList.add('hidden');
+                imagePreviewContainer.classList.remove('flex');
+            }
+        }
+
+        function setupEventListeners() {
+            // Light / Dark Theme Switcher
+            const toggleTheme = () => {
+                document.documentElement.classList.toggle('dark');
+                const isDark = document.documentElement.classList.contains('dark');
+                localStorage.setItem('flyrides_theme', isDark ? 'dark' : 'light');
+            };
+
+            document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
+            document.getElementById('themeToggleMobileBtn').addEventListener('click', toggleTheme);
+
+            // Search Filter Logic
+            searchInput.addEventListener('input', (e) => {
+                const val = e.target.value;
+                clearSearch.classList.toggle('hidden', val.length === 0);
+                renderCards(val);
+            });
+
+            clearSearch.addEventListener('click', () => {
+                searchInput.value = '';
+                clearSearch.classList.add('hidden');
+                renderCards('');
+            });
+
+            // Keyboard shortcut '/' to search focus
+            window.addEventListener('keydown', (e) => {
+                if (e.key === '/' && document.activeElement !== searchInput) {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+            });
+
+            // Custom Image Input Handlers
+            appImageUrlInput.addEventListener('input', (e) => {
+                setCustomImagePreview(e.target.value);
+            });
+
+            appImageFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        appImageUrlInput.value = '';
+                        setCustomImagePreview(evt.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            removeImageBtn.addEventListener('click', () => {
+                appImageUrlInput.value = '';
+                appImageFileInput.value = '';
+                setCustomImagePreview('');
+            });
+
+            // Modal Controls
+            document.getElementById('openAddModalBtn').addEventListener('click', openAddModal);
+            document.getElementById('addAppMobileBtn').addEventListener('click', openAddModal);
+            document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+            document.getElementById('cancelModalBtn').addEventListener('click', closeModal);
+
+            // Reset Apps
+            document.getElementById('resetAppsBtn').addEventListener('click', () => {
+                if (confirm('Are you sure you want to reset all apps to default list?')) {
+                    apps = [...DEFAULT_APPS];
+                    saveAppsToStorage();
+                    renderCards(searchInput.value);
+                }
+            });
+
+            // Form Submit Logic
+            appForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const id = document.getElementById('appId').value;
+                const name = document.getElementById('appName').value.trim();
+                const url = document.getElementById('appUrl').value.trim();
+                const statusType = document.getElementById('appStatusType').value;
+                let subtext = document.getElementById('appSubtext').value.trim();
+
+                if (!subtext) {
+                    try {
+                        const parsedUrl = new URL(url);
+                        subtext = parsedUrl.hostname;
+                    } catch {
+                        subtext = '192.168.1.27';
+                    }
+                }
+
+                if (id) {
+                    // Update existing app
+                    const appIndex = apps.findIndex(a => a.id === id);
+                    if (appIndex !== -1) {
+                        apps[appIndex] = {
+                            ...apps[appIndex],
+                            name,
+                            url,
+                            statusType,
+                            subtext,
+                            icon: selectedIcon.icon,
+                            iconBg: selectedIcon.color,
+                            imageUrl: currentCustomImage
+                        };
+                    }
+                } else {
+                    // Create new app
+                    const newApp = {
+                        id: Date.now().toString(),
+                        name,
+                        url,
+                        statusType,
+                        subtext,
+                        icon: selectedIcon.icon,
+                        iconBg: selectedIcon.color,
+                        imageUrl: currentCustomImage
+                    };
+                    apps.unshift(newApp);
+                }
+
+                saveAppsToStorage();
+                renderCards(searchInput.value);
+                closeModal();
+            });
+        }
+
+        function openAddModal() {
+            document.getElementById('appId').value = '';
+            document.getElementById('appName').value = '';
+            document.getElementById('appUrl').value = '';
+            document.getElementById('appSubtext').value = '';
+            document.getElementById('appStatusType').value = 'In-Office';
+            appImageUrlInput.value = '';
+            appImageFileInput.value = '';
+            setCustomImagePreview('');
+            
+            selectedIcon = ICONS_LIST[0];
+            renderIconSelector();
+
+            modalTitle.textContent = "Add New Module";
+            showModal();
+        }
+
+        window.openEditModal = function(id) {
+            const app = apps.find(a => a.id === id);
+            if (!app) return;
+
+            document.getElementById('appId').value = app.id;
+            document.getElementById('appName').value = app.name;
+            document.getElementById('appUrl').value = app.url;
+            document.getElementById('appSubtext').value = app.subtext || '';
+            document.getElementById('appStatusType').value = app.statusType || 'In-Office';
+
+            appImageUrlInput.value = app.imageUrl && !app.imageUrl.startsWith('data:') ? app.imageUrl : '';
+            appImageFileInput.value = '';
+            setCustomImagePreview(app.imageUrl || '');
+
+            const foundIcon = ICONS_LIST.find(i => i.icon === app.icon) || ICONS_LIST[0];
+            selectedIcon = foundIcon;
+            renderIconSelector();
+
+            modalTitle.textContent = "Edit Module";
+            showModal();
+        };
+
+        window.deleteApp = function(id) {
+            if (confirm('Are you sure you want to remove this module from Flyrides UI Hub?')) {
+                apps = apps.filter(a => a.id !== id);
+                saveAppsToStorage();
+                renderCards(searchInput.value);
+            }
+        };
+
+        function showModal() {
+            appModal.classList.remove('opacity-0', 'pointer-events-none');
+            modalContainer.classList.remove('scale-95');
+            modalContainer.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            appModal.classList.add('opacity-0', 'pointer-events-none');
+            modalContainer.classList.remove('scale-100');
+            modalContainer.classList.add('scale-95');
+        }
+
+        function escapeHtml(str) {
+            return str ? str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;") : '';
+        }
+
+        // Start animation/app logic on load
+        window.onload = initApp;
+    </script>
+</body>
+</html>
